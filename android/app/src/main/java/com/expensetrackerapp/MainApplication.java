@@ -1,4 +1,4 @@
-package com.expensetrackerapp;
+package com.sasb.expenseTrackerApp;
 
 import android.app.Application;
 import android.content.Context;
