@@ -20,3 +20,20 @@ export const signup = (email,password) => async (dispatch) => {
         console.log(error.message);
     });
 };
+
+export const login = (email,password) => async (dispatch) => {
+    auth()
+    .signInWithEmailAndPassword(email, password)
+    .then(() => {
+        dispatch({
+            type: actionTypes.LOGIN_SUCCESS,
+        });
+    })
+    .catch(error => {
+        dispatch({
+            type: actionTypes.LOGIN_FAIL,
+            payload: error.message,
+        });
+        console.log(error.message);
+    });
+};

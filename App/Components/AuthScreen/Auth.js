@@ -19,12 +19,7 @@ export const Auth = (props) => {
     }
 
     const login = () => {
-        auth()
-         .signInWithEmailAndPassword(email, password)
-         .then(res => {
-             console.log(res.user.email);
-          })
-         .catch(error => console.log(error));
+        email && password ? props.login(email,password) : validate();
     }
 
     const validate = () => {
@@ -148,6 +143,8 @@ const styles = StyleSheet.create({
     return {
       signup: (email, password) =>
         dispatch(actions.signup(email, password)),
+      login: (email, password) =>
+        dispatch(actions.login(email, password)),
     };
   };
 
