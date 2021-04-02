@@ -4,18 +4,18 @@ import HeaderMenu from '../Header/HeaderMenu';
 
 export const Dashboard = (props) => {
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             <HeaderMenu/>
             <View>
             <Text style={{color:"black", padding: 20}}>Welcome {props .user.email} !!!!</Text>
             </View>
-        </View>
+        </ScrollView>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
+      flexGrow: 1,
       backgroundColor: "#fff",
       alignItems: "center",
     },

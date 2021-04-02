@@ -80,7 +80,7 @@ function Auth() {
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
+      flexGrow: 1,
       backgroundColor: "#404996",
       alignItems: "center",
       justifyContent: "center",
