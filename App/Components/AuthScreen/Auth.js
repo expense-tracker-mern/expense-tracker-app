@@ -1,29 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StatusBar,TextInput, TouchableOpacity, StyleSheet, Image, ScrollView} from 'react-native';
+import {Input} from 'react-native-elements'
 import auth from '@react-native-firebase/auth';
+import { connect } from 'react-redux';
 
-function Auth() {
+import * as actions from '../../../Store/actions/index';
+import ErrorBox from '../ErrorBox/ErrorBox'
+
+export const Auth = (props) => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isEmailEmpty, setEmailEmpty] = useState(false);
+    const [isPasswordEmpty, setPasswordEmpty] = useState(false);
 
     const signup = () => {
-        auth()
-          .createUserWithEmailAndPassword(email, password)
-          .then(() => {
-            console.log('User account created & signed in!');
-          })
-          .catch(error => {
-            if (error.code === 'auth/email-already-in-use') {
-              console.log('That email address is already in use!');
-            }
-    
-            if (error.code === 'auth/invalid-email') {
-              console.log('That email address is invalid!');
-            }
-    
-            console.error(error);
-        });
+        email && password ? props.signup(email,password) : validate();
     }
 
     const login = () => {
@@ -35,6 +27,17 @@ function Auth() {
          .catch(error => console.log(error));
     }
 
+    const validate = () => {
+        if(email == '' && password == ''){
+            setEmailEmpty(true);
+            setPasswordEmpty(true);
+        }else if(email == ''){
+            setEmailEmpty(true);
+        }else{
+            setPasswordEmpty(true);
+        }
+    }
+
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <View>
@@ -44,27 +47,34 @@ function Auth() {
                 <Image source={require('../../../piggy.png')} style={{ width: 200, height: 200 }}/>
             </View>
             <StatusBar style="auto" />
+            { props.error ? 
+                <ErrorBox error = {props.error}/>
+            : null}
             <View style={styles.inputView}>
-              <TextInput
-                style={styles.TextInput}
+              <Input
                 placeholder="Email"
                 placeholderTextColor="#fff"
                 name="email"
                 keyboardType="email-address"
+                leftIcon={{ type: 'email', name: 'email', color: 'white' }}
                 onChangeText={text => setEmail(text)}
                 defaultValue={email}
+                errorStyle={{ color: 'red' }}
+                errorMessage={isEmailEmpty ? 'Email is required' : null}
               />
             </View>
 
             <View style={styles.inputView}>
-              <TextInput
-                style={styles.TextInput}
+              <Input
                 placeholder="Password"
                 placeholderTextColor="#fff"
                 secureTextEntry={true}
                 name="password"
+                leftIcon={{ type: 'email', name: 'lock', color: 'white' }}
                 onChangeText={text => setPassword(text)}
                 defaultValue={password}
+                errorStyle={{ color: 'red' }}
+                errorMessage={isPasswordEmpty ? 'Password is required' : null}
               />
             </View>
 
@@ -93,10 +103,9 @@ const styles = StyleSheet.create({
     inputView: {
       backgroundColor: "#404996",
       width: "70%",
-      height: 45,
+      height: 60,
       marginBottom: 20,
       borderColor: '#fff',
-      borderBottomWidth : 1,
     },
   
     TextInput: {
@@ -129,4 +138,17 @@ const styles = StyleSheet.create({
     }
   });
 
-export default Auth
+  const mapStateToProps = (state) => {
+    return {
+      error: state.auth.error,
+    };
+  };
+  
+  const mapDispatchToProps = (dispatch) => {
+    return {
+      signup: (email, password) =>
+        dispatch(actions.signup(email, password)),
+    };
+  };
+
+  export default connect(mapStateToProps, mapDispatchToProps)(Auth);

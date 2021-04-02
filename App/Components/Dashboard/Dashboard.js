@@ -7,7 +7,7 @@ export const Dashboard = (props) => {
         <ScrollView contentContainerStyle={styles.container}>
             <HeaderMenu/>
             <View>
-            <Text style={{color:"black", padding: 20}}>Welcome {props .user.email} !!!!</Text>
+            <Text style={{color:"black", padding: 20}}>Welcome {props.user.email} !!!!</Text>
             </View>
         </ScrollView>
     )
