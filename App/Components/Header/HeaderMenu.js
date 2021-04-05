@@ -3,7 +3,7 @@ import {Header, Icon} from 'react-native-elements';
 import {TouchableOpacity} from 'react-native'
 import auth from '@react-native-firebase/auth';
 
-const HeaderMenu = () => {
+const HeaderMenu = (props) => {
 
     const logout = () => {
         auth()
@@ -14,7 +14,7 @@ const HeaderMenu = () => {
     return (
         <Header backgroundColor="black"
             leftComponent={{ icon: 'menu', color: '#fff', padding: 10 }}
-            centerComponent={{ text: 'EXPENSE TRACKER', style: { color: '#fff',padding: 10, fontSize: 20 } }}
+            centerComponent={{ text: props.name, style: { color: '#fff',padding: 10, fontSize: 15 } }}
             rightComponent={<TouchableOpacity
                 onPress={logout}
                 style={{padding:10}}
