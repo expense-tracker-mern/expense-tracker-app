@@ -1,11 +1,20 @@
-import React from 'react';
-import { View,ScrollView, Text, StyleSheet} from 'react-native';
-import { Input, Button } from 'react-native-elements';
+import React, {useState} from 'react';
+import { View,ScrollView, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import { Input, Button, Overlay } from 'react-native-elements';
 import DropDownPicker from 'react-native-dropdown-picker';
 import storage from '@react-native-firebase/storage';
 import { utils } from '@react-native-firebase/app';
 
-const TransactionModal = () => {
+import UploadFile from '../UploadFile/UploadFile';
+
+const TransactionModal =  () => {
+
+    const [visible, setVisible] = useState(false);
+
+    const toggleOverlay = () => {
+        setVisible(!visible);
+    };
+    
     return (
         <View style={styles.container}>
             <View>
@@ -72,6 +81,7 @@ const TransactionModal = () => {
                 }}
                 containerStyle={{margin:5}}
                 title="Upload photo"
+                onPress={toggleOverlay}
             />
             </View>
             <View>
@@ -80,6 +90,9 @@ const TransactionModal = () => {
                 title="Submit"
             />
             </View>
+            <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
+                <UploadFile visible= {toggleOverlay}/>
+            </Overlay>
         </View>
     )
 }
@@ -100,7 +113,7 @@ const styles = StyleSheet.create({
     buttonContainer: {
         flexDirection: 'row',
         marginTop: 10
-    }
+    },
 });
 
 export default TransactionModal

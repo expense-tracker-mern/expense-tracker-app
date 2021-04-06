@@ -5529,6 +5529,11 @@ react-native-codegen@^0.0.6:
     jscodeshift "^0.11.0"
     nullthrows "^1.1.1"
 
+react-native-document-picker@^5.0.3:
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/react-native-document-picker/-/react-native-document-picker-5.0.3.tgz#f31f18ee7a90fb8ea94f301d7a5fdb069322dcd8"
+  integrity sha512-OLTUB9SvY2J6bYZ6F/b4FKwDfEimP+sRsEP3OSp1oosYD4+G9C5J3CKiJ69B7CCXmA89Bi/QBr5j2lW9y9rWlQ==
+
 react-native-dropdown-picker@^4.0.4:
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/react-native-dropdown-picker/-/react-native-dropdown-picker-4.0.4.tgz#8676b28c88954bd2f673dbc7c8e4425b912c3601"
@@ -5549,6 +5554,11 @@ react-native-elements@^3.3.2:
     opencollective-postinstall "^2.0.3"
     react-native-ratings "^7.3.0"
     react-native-size-matters "^0.3.1"
+
+react-native-image-picker@^3.3.2:
+  version "3.3.2"
+  resolved "https://registry.yarnpkg.com/react-native-image-picker/-/react-native-image-picker-3.3.2.tgz#dde494ce4fbb5c36a4ea56346b751b85223d6b25"
+  integrity sha512-7z902J7a7j2rUM6zzyLSGpBSDfXy/V9ssSDKV0QyoQpr7COZs3zsJye2PU1Z4TRqmuNtREIeG5m1NdwtpcXBkg==
 
 react-native-month-year-picker@^1.6.4:
   version "1.6.4"
