@@ -1,16 +1,18 @@
 import React,{ useState, useCallback } from 'react'
 import { View,ScrollView, Text, StyleSheet} from 'react-native';
-import {Button, Icon} from 'react-native-elements';
-import MonthPicker, { ACTION_DATE_SET, ACTION_DISMISSED, ACTION_NEUTRAL } from 'react-native-month-year-picker';
+import {Button, Overlay} from 'react-native-elements';
+import MonthPicker, { ACTION_DATE_SET, ACTION_DISMISSED } from 'react-native-month-year-picker';
 import dateFormat from 'dateformat';
 
 import HeaderMenu from '../Header/HeaderMenu';
+import TransactionModal from '../Transaction/TransactionModal';
 
 export const Dashboard = (props) => {
     const [date, setDate] = useState(new Date());
     const [showCalendar, setShowCalendar] = useState(false);
     const [month, setMonth] = useState('');
     const [year, setYear] = useState('');
+    const [modal, showModal] = useState(false);
 
     const showPicker = useCallback((value) => setShowCalendar(value), []);
 
@@ -36,6 +38,10 @@ export const Dashboard = (props) => {
         setMonth('');
         setYear('');
     }
+
+    const toggleOverlay = () => {
+        showModal(!modal);
+    };
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -74,6 +80,7 @@ export const Dashboard = (props) => {
                     color: "white"
                 }}
                 containerStyle={{margin:5}}
+                onPress={toggleOverlay}
             />
             </View>
             {showCalendar ? 
@@ -82,6 +89,11 @@ export const Dashboard = (props) => {
                 value={date}
                 />
             : null }
+            <Overlay isVisible={modal} onBackdropPress={toggleOverlay} 
+              fullScreen 
+              overlayStyle={{backgroundColor:"#404996"}}>
+                <TransactionModal/>
+            </Overlay>
         </ScrollView>
     )
 }
