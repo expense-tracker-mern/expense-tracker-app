@@ -36,6 +36,7 @@ const UploadFile = (props) => {
           console.log('User tapped custom button: ', response.customButton);
         } else {
           let source = { uri: response.uri };
+          props.data(source)
           console.log({ source });
         }
     }

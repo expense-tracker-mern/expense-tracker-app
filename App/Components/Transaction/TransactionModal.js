@@ -3,17 +3,33 @@ import { View,ScrollView, Text, StyleSheet, TouchableOpacity} from 'react-native
 import { Input, Button, Overlay } from 'react-native-elements';
 import DropDownPicker from 'react-native-dropdown-picker';
 import storage from '@react-native-firebase/storage';
-import { utils } from '@react-native-firebase/app';
 
 import UploadFile from '../UploadFile/UploadFile';
 
 const TransactionModal =  () => {
 
     const [visible, setVisible] = useState(false);
+    const [image, setImage] = useState('');
 
     const toggleOverlay = () => {
         setVisible(!visible);
     };
+
+    const upload = (img) => {
+        setImage(img);
+    }
+
+    const submit = () => {
+        console.log(image.uri);
+        storage().ref(image.uri).putFile(image.uri)
+        .then(() => {
+            storage()
+                .ref(image.uri)
+                .getDownloadURL()
+                .then(url => console.log(url))
+                .catch(err => console.log(err));
+        }).catch(err => console.log(err));
+    }
     
     return (
         <View style={styles.container}>
@@ -88,10 +104,11 @@ const TransactionModal =  () => {
             <Button buttonStyle={{backgroundColor:"#4682B4",padding:15}}
                 containerStyle={{margin:5, marginTop: 25}}
                 title="Submit"
+                onPress = {submit}
             />
             </View>
             <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
-                <UploadFile visible= {toggleOverlay}/>
+                <UploadFile data={upload} visible= {toggleOverlay}/>
             </Overlay>
         </View>
     )
