@@ -11,9 +11,19 @@ const HeaderMenu = (props) => {
         .then(() => console.log('User signed out!'));
     }
 
+    const test = async() => {
+        const idTokenResult = await auth().currentUser.getIdTokenResult();
+        console.log('User JWT: ', idTokenResult.token);
+    }
+
     return (
         <Header backgroundColor="black"
-            leftComponent={{ icon: 'menu', color: '#fff', padding: 10 }}
+            leftComponent={<TouchableOpacity
+                onPress={test}
+                style={{padding:10}}
+              >
+                <Icon name="menu" color="white" size={25} />
+              </TouchableOpacity>}
             centerComponent={{ text: props.name, style: { color: '#fff',padding: 10, fontSize: 15 } }}
             rightComponent={<TouchableOpacity
                 onPress={logout}

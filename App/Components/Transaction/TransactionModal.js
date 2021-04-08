@@ -3,6 +3,8 @@ import { View,ScrollView, Text, StyleSheet, TouchableOpacity} from 'react-native
 import { Input, Button, Overlay } from 'react-native-elements';
 import DropDownPicker from 'react-native-dropdown-picker';
 import storage from '@react-native-firebase/storage';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import dateFormat from 'dateformat';
 
 import UploadFile from '../UploadFile/UploadFile';
 
@@ -10,6 +12,10 @@ const TransactionModal =  () => {
 
     const [visible, setVisible] = useState(false);
     const [image, setImage] = useState('');
+    const [date, setDate] = useState(new Date());
+    const [show, setShow] = useState(false);
+    const [month, setMonth] = useState('');
+    const [year, setYear] = useState('');
 
     const toggleOverlay = () => {
         setVisible(!visible);
@@ -30,6 +36,21 @@ const TransactionModal =  () => {
                 .catch(err => console.log(err));
         }).catch(err => console.log(err));
     }
+
+    const openCalendar = () => {
+        setShow(true);
+    }
+
+    const pickDate = (event, selectedDate) => {
+        if(event.type === 'set') {
+            setShow(false);
+            setDate(selectedDate);
+            setMonth(dateFormat(selectedDate, 'mmmm'));
+            setYear(selectedDate.getFullYear());
+        }else{
+            setShow(false);
+        }
+    };
     
     return (
         <View style={styles.container}>
@@ -86,7 +107,8 @@ const TransactionModal =  () => {
                     color: "white"
                 }}
                 containerStyle={{margin:5}}
-                title="Select a date"
+                title={month ? month.toString()+' '+date.getDate()+', '+year.toString() : 'Select a date'}
+                onPress={openCalendar}
             />
             <Button buttonStyle={{backgroundColor:"#404996",padding:10, borderWidth:1.5, borderColor:"#4682B4"}}
                 icon={{
@@ -110,6 +132,15 @@ const TransactionModal =  () => {
             <Overlay isVisible={visible} onBackdropPress={toggleOverlay}>
                 <UploadFile data={upload} visible= {toggleOverlay}/>
             </Overlay>
+            {show && (
+                <DateTimePicker
+                testID="dateTimePicker"
+                value={date}
+                is24Hour={true}
+                display="default"
+                onChange={pickDate}
+                />
+            )}
         </View>
     )
 }
