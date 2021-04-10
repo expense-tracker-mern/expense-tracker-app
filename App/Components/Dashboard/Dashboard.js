@@ -1,11 +1,13 @@
 import React,{ useState, useCallback } from 'react'
 import { View,ScrollView, Text, StyleSheet} from 'react-native';
-import {Button, Overlay} from 'react-native-elements';
+import {Button, Overlay, Icon, ButtonGroup} from 'react-native-elements';
 import MonthPicker, { ACTION_DATE_SET, ACTION_DISMISSED } from 'react-native-month-year-picker';
 import dateFormat from 'dateformat';
+import { connect } from 'react-redux';
 
 import HeaderMenu from '../Header/HeaderMenu';
 import TransactionModal from '../Transaction/TransactionModal';
+import * as actions from '../../../Store/actions/index';
 
 export const Dashboard = (props) => {
     const [date, setDate] = useState(new Date());
@@ -13,6 +15,12 @@ export const Dashboard = (props) => {
     const [month, setMonth] = useState('');
     const [year, setYear] = useState('');
     const [modal, showModal] = useState(false);
+    const [index, setIndex] = useState(0);
+    const buttons = ['Daily', 'Monthy', 'Stats'];
+
+    const updateindex = (event) => {
+        setIndex(event);
+    }
 
     const showPicker = useCallback((value) => setShowCalendar(value), []);
 
@@ -43,11 +51,19 @@ export const Dashboard = (props) => {
         showModal(!modal);
     };
 
+    const minusYear = () => {
+        props.getYear(props.year? props.year : new Date().getFullYear(),"minus");
+    }
+
+    const plusYear = () => {
+        props.getYear(props.year? props.year : new Date().getFullYear(),"plus");
+    }
+
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <HeaderMenu name={props.user.email}/>
-            <View style={styles.buttonContainer}>
-            <Button buttonStyle={{backgroundColor:"#4682B4",padding:10}}
+            {index == 0 ? <View style={styles.buttonContainer}>
+            <Button buttonStyle={{backgroundColor: "#404996", borderWidth:1.5, borderColor:"#4682B4",padding:10}}
                 icon={{
                     name: "calendar-today",
                     type:"fontawesome",
@@ -59,7 +75,7 @@ export const Dashboard = (props) => {
                 onPress={() => showPicker(true)}
                 raised
             />
-            <Button buttonStyle={{backgroundColor:"#4682B4",padding:10}}
+            <Button buttonStyle={{backgroundColor: "#404996", borderWidth:1.5, borderColor:"#4682B4",padding:10}}
                 icon={{
                     name: "refresh",
                     type:"fontawesome",
@@ -70,7 +86,24 @@ export const Dashboard = (props) => {
                 onPress={reset}
                 raised
             />
-            </View>
+            </View> : null }
+            {index == 1 ? <View style={styles.yearContainer}>
+                <Icon name='arrow-left' color='white' onPress={minusYear} />
+                    <Text style={{color:'white', fontSize:16}}>{
+                        props.year ? props.year : new Date().getFullYear()
+                    }</Text>
+                <Icon name='arrow-right' color='white' onPress={plusYear} />
+            </View> : null}
+            <ButtonGroup
+                selectedIndex={index}
+                buttons={buttons}
+                containerStyle={{height: 40, width: 300, marginTop:20, borderColor:"#4682B4"}}
+                buttonStyle={{backgroundColor: "#404996"}}
+                textStyle= {{color: "white"}}
+                selectedButtonStyle= {{backgroundColor: "#4682B4"}}
+                innerBorderStyle={{color:"#4682B4"}}
+                onPress={updateindex}
+                />
             <View style={{position:'absolute',bottom:30,right:30,alignSelf:'flex-end',}}>
             <Button buttonStyle={{backgroundColor:"#4682B4",padding:10, borderRadius: 100, padding: 20, width:90,height:90,}}
                 icon={{
@@ -107,7 +140,27 @@ const styles = StyleSheet.create({
     buttonContainer: {
         flexDirection: 'row',
         marginTop: 10
+    },
+    yearContainer: {
+        flexDirection: 'row',
+        marginTop: 10,
+        borderColor: "#4682B4",
+        borderWidth:1.5,
+        padding: 10,
+        borderRadius: 3
     }
 });
 
-export default Dashboard
+const mapStateToProps = (state) => {
+    return {
+      year: state.year.year,
+    };
+  };
+  
+  const mapDispatchToProps = (dispatch) => {
+    return {
+        getYear: (year, option) => dispatch(actions.getYear(year, option)),
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
