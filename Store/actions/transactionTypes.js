@@ -12,7 +12,7 @@ export const getTransactionTypes = () => async (dispatch) => {
       res.data.forEach(element => {
         const type = {};
         type.label = element.name.charAt(0).toUpperCase() + element.name.slice(1);
-        type.value = element.name;
+        type.value = element._id;
         transactionTypes.push(type);
       });
 

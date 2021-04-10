@@ -18,7 +18,7 @@ const reducer = (state = initialState, action) => {
       case GET_CATEGORIES_FAIL:
         return {
           ...state,
-          error: 'Unable to get Transaction Types',
+          error: 'Unable to get Categories',
           categories: null
         };
       default:

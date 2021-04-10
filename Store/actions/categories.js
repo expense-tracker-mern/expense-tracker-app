@@ -12,7 +12,7 @@ export const getCategories = (type) => async (dispatch) => {
       res.data.forEach(element => {
         const category = {};
         category.label = element.name.charAt(0).toUpperCase() + element.name.slice(1);
-        category.value = element.name;
+        category.value = element._id;
         categories.push(category);
       });
 

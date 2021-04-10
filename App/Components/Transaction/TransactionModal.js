@@ -6,6 +6,7 @@ import storage from '@react-native-firebase/storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import dateFormat from 'dateformat';
 import { connect } from 'react-redux';
+import auth from '@react-native-firebase/auth';
 
 import UploadFile from '../UploadFile/UploadFile';
 import * as actions from '../../../Store/actions/index';
@@ -15,21 +16,31 @@ const TransactionModal =  (props) => {
 
     const [visible, setVisible] = useState(false);
     const [image, setImage] = useState('');
+    const [name, setName] = useState('');
+    const [amount, setAmount] = useState('');
+    const [token, setToken] = useState('');
     const [date, setDate] = useState(new Date());
     const [show, setShow] = useState(false);
     const [month, setMonth] = useState('');
     const [year, setYear] = useState('');
-    const [type, setType] = useState('income');
-    const [category, setCategory] = useState('Salary'); 
+    const [type, setType] = useState('606b73160470d66cbcc1ae75');
+    const [category, setCategory] = useState('606b74a30470d66cbcc1ae77'); 
 
     useEffect(() => {
         props.getTransactionTypes();
-        props.getCategories(type);
+        props.getCategories('income');
+        getToken();
     }, [])
+
+    const getToken = async() => {
+        const idTokenResult = await auth().currentUser.getIdTokenResult();
+        console.log('User JWT: ', idTokenResult.token);
+        setToken(idTokenResult.token);
+    }
 
     const transactionTypeChange = (event) => {
         setType(event.value);
-        props.getCategories(event.value);
+        props.getCategories(event.label.toLowerCase());
     }
 
     const categoryChange = (event) => {
@@ -44,16 +55,29 @@ const TransactionModal =  (props) => {
         setImage(img);
     }
 
+    const submitTransaction = (url) => {
+        console.log(url);
+        props.submitTransaction(
+            name,category,amount,type,date,token,url
+        )
+    }
+
     const submit = () => {
-        console.log(image.uri);
-        storage().ref(image.uri).putFile(image.uri)
-        .then(() => {
-            storage()
-                .ref(image.uri)
-                .getDownloadURL()
-                .then(url => console.log(url))
-                .catch(err => console.log(err));
-        }).catch(err => console.log(err));
+        if(image){
+            storage().ref(image.uri).putFile(image.uri)
+            .then(() => {
+                storage()
+                    .ref(image.uri)
+                    .getDownloadURL()
+                    .then(url => {
+                        console.log(url)
+                        submitTransaction(url);
+                    })
+                    .catch(err => console.log(err));
+            }).catch(err => console.log(err));
+        }else{
+            submitTransaction();
+        }
     }
 
     const openCalendar = () => {
@@ -74,6 +98,8 @@ const TransactionModal =  (props) => {
     return (
         <View style={styles.container}>
             {props.TransactionTypeError ? <ErrorBox error ={props.TransactionTypeError}/> : null}
+            {props.categoriesError ? <ErrorBox error ={props.categoriesError}/> : null}
+            {props.submitTransactionErrors ? <ErrorBox error ={props.submitTransactionErrors}/> : null}
             <View>
                 <Text style={styles.header}>Add a Transaction</Text>
             </View>
@@ -81,12 +107,13 @@ const TransactionModal =  (props) => {
             <Input containerStyle={{width: 300, marginBottom: 20}}
                 placeholder='Name'
                 style={{color: "white"}}
+                onChangeText={value => setName(value)}
                 />
             </View>
             <View>
             {props.types ? <DropDownPicker
                 items={props.types}
-                defaultValue= 'income'
+                defaultValue= {props.types[0].value}
                 containerStyle={{height: 40, width: 280, marginBottom: 30}}
                 style={{backgroundColor: "#404996", borderWidth:1.5, borderColor:"#4682B4"}}
                 itemStyle={{
@@ -112,6 +139,7 @@ const TransactionModal =  (props) => {
             <Input containerStyle={{width: 300, marginTop: 20}}
                 placeholder='Amount'
                 style={{color: "white"}}
+                onChangeText={value => setAmount(value)}
                 />
             </View>
             <View style={styles.buttonContainer}>
@@ -186,7 +214,9 @@ const mapStateToProps = (state) => {
       types: state.transactionTypes.types,
 
       categories: state.categories.categories,
-      categoriesError: state.categories.error
+      categoriesError: state.categories.error,
+
+      submitTransactionErrors: state.transaction.errors
     };
   };
   
@@ -194,6 +224,9 @@ const mapStateToProps = (state) => {
     return {
         getTransactionTypes: () => dispatch(actions.getTransactionTypes()),
         getCategories: (type) => dispatch(actions.getCategories(type)),
+        submitTransaction: 
+        (name, category, amount, type, date, token, image) => 
+            dispatch(actions.submitTransaction(name, category, amount, type, date, token, image)),
     };
 };
 
