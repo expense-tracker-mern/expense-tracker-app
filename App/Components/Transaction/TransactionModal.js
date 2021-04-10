@@ -1,14 +1,17 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { View,ScrollView, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import { Input, Button, Overlay } from 'react-native-elements';
 import DropDownPicker from 'react-native-dropdown-picker';
 import storage from '@react-native-firebase/storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import dateFormat from 'dateformat';
+import { connect } from 'react-redux';
 
 import UploadFile from '../UploadFile/UploadFile';
+import * as actions from '../../../Store/actions/index';
+import ErrorBox from '../ErrorBox/ErrorBox';
 
-const TransactionModal =  () => {
+const TransactionModal =  (props) => {
 
     const [visible, setVisible] = useState(false);
     const [image, setImage] = useState('');
@@ -16,6 +19,11 @@ const TransactionModal =  () => {
     const [show, setShow] = useState(false);
     const [month, setMonth] = useState('');
     const [year, setYear] = useState('');
+
+    useEffect(() => {
+        props.getTransactionTypes();
+        console.log(props.types)
+    }, [])
 
     const toggleOverlay = () => {
         setVisible(!visible);
@@ -54,6 +62,7 @@ const TransactionModal =  () => {
     
     return (
         <View style={styles.container}>
+            {props.TransactionTypeError ? <ErrorBox error ={props.TransactionTypeError}/> : null}
             <View>
                 <Text style={styles.header}>Add a Transaction</Text>
             </View>
@@ -64,11 +73,8 @@ const TransactionModal =  () => {
                 />
             </View>
             <View>
-            <DropDownPicker
-                items={[
-                    {label: 'Income', value: 'income'},
-                    {label: 'Expense', value: 'expense'},
-                ]}
+            {props.types ? <DropDownPicker
+                items={props.types}
                 defaultValue= 'income'
                 containerStyle={{height: 40, width: 280, marginBottom: 30}}
                 style={{backgroundColor: "#404996", borderWidth:1.5, borderColor:"#4682B4"}}
@@ -77,7 +83,7 @@ const TransactionModal =  () => {
                 }}
                 dropDownStyle={{backgroundColor: "#404996", borderWidth:1.5, borderColor:"#4682B4"}}
                 
-            />
+            /> : null}
             <DropDownPicker
                 items={[
                     {label: 'Gift', value: 'gift'},
@@ -164,4 +170,17 @@ const styles = StyleSheet.create({
     },
 });
 
-export default TransactionModal
+const mapStateToProps = (state) => {
+    return {
+      TransactionTypeError: state.transactionTypes.error,
+      types: state.transactionTypes.types
+    };
+  };
+  
+  const mapDispatchToProps = (dispatch) => {
+    return {
+        getTransactionTypes: () => dispatch(actions.getTransactionTypes()),
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(TransactionModal);
