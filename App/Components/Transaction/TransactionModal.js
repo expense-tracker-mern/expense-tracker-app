@@ -19,11 +19,22 @@ const TransactionModal =  (props) => {
     const [show, setShow] = useState(false);
     const [month, setMonth] = useState('');
     const [year, setYear] = useState('');
+    const [type, setType] = useState('income');
+    const [category, setCategory] = useState('Salary'); 
 
     useEffect(() => {
         props.getTransactionTypes();
-        console.log(props.types)
+        props.getCategories(type);
     }, [])
+
+    const transactionTypeChange = (event) => {
+        setType(event.value);
+        props.getCategories(event.value);
+    }
+
+    const categoryChange = (event) => {
+        setCategory(event.value);
+    }
 
     const toggleOverlay = () => {
         setVisible(!visible);
@@ -82,21 +93,20 @@ const TransactionModal =  (props) => {
                     justifyContent: 'flex-start'
                 }}
                 dropDownStyle={{backgroundColor: "#404996", borderWidth:1.5, borderColor:"#4682B4"}}
-                
+                onChangeItem = {transactionTypeChange}
             /> : null}
-            <DropDownPicker
-                items={[
-                    {label: 'Gift', value: 'gift'},
-                    {label: 'Salary', value: 'salary'},
-                ]}
-                defaultValue= 'salary'
+            {props.categories ? <DropDownPicker
+                items={props.categories}
+                defaultValue= {props.categories[0].value}
+                placeholder= 'Select a category'
                 containerStyle={{height: 40, width: 280, marginBottom: 10}}
                 style={{backgroundColor: "#404996", borderWidth:1.5, borderColor:"#4682B4"}}
                 itemStyle={{
                     justifyContent: 'flex-start'
                 }}
                 dropDownStyle={{backgroundColor: "#404996", borderWidth:1.5, borderColor:"#4682B4"}} 
-            />
+                onChangeItem = {categoryChange}
+            /> : null}
             </View>
             <View>
             <Input containerStyle={{width: 300, marginTop: 20}}
@@ -173,13 +183,17 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
     return {
       TransactionTypeError: state.transactionTypes.error,
-      types: state.transactionTypes.types
+      types: state.transactionTypes.types,
+
+      categories: state.categories.categories,
+      categoriesError: state.categories.error
     };
   };
   
   const mapDispatchToProps = (dispatch) => {
     return {
         getTransactionTypes: () => dispatch(actions.getTransactionTypes()),
+        getCategories: (type) => dispatch(actions.getCategories(type)),
     };
 };
 

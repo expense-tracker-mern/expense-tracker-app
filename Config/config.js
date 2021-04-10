@@ -1,3 +1,3 @@
 export const Config = {
-    API_URL: 'http://99f58ca7b59e.ngrok.io/api',
+    API_URL: 'http://c87b79436e45.ngrok.io/api',
 }
