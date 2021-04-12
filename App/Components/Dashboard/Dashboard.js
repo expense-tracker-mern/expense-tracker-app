@@ -125,7 +125,7 @@ export const Dashboard = (props) => {
             <Overlay isVisible={modal} onBackdropPress={toggleOverlay} 
               fullScreen 
               overlayStyle={{backgroundColor:"#404996"}}>
-                <TransactionModal/>
+                <TransactionModal visible={toggleOverlay}/>
             </Overlay>
         </ScrollView>
     )

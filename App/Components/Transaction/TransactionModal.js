@@ -21,7 +21,10 @@ const TransactionModal =  (props) => {
     const [token, setToken] = useState('');
     const [date, setDate] = useState(new Date());
     const [show, setShow] = useState(false);
-    const [month, setMonth] = useState('');
+    const [day, setDay] = useState('');
+    const [monthName, setMonthName] = useState('');
+    const [monthNumber, setMonthNumber] = useState('');
+    const [datePicked, setDatePicked] = useState(false);
     const [year, setYear] = useState('');
     const [type, setType] = useState('606b73160470d66cbcc1ae75');
     const [category, setCategory] = useState('606b74a30470d66cbcc1ae77'); 
@@ -30,7 +33,15 @@ const TransactionModal =  (props) => {
         props.getTransactionTypes();
         props.getCategories('income');
         getToken();
+        setDay(dateFormat(date, 'd'));
+        setMonthName(dateFormat(date, 'mmmm'));
+        setMonthNumber(dateFormat(date, 'm'));
+        setYear(date.getFullYear());
     }, [])
+
+    if(props.submitTransactionSuccess){
+        props.visible();
+    }
 
     const getToken = async() => {
         const idTokenResult = await auth().currentUser.getIdTokenResult();
@@ -56,9 +67,9 @@ const TransactionModal =  (props) => {
     }
 
     const submitTransaction = (url) => {
-        console.log(url);
+        console.log(year);
         props.submitTransaction(
-            name,category,amount,type,date,token,url
+            name,category,amount,type,date,token,url, day, monthName, monthNumber, year
         )
     }
 
@@ -72,10 +83,12 @@ const TransactionModal =  (props) => {
                     .then(url => {
                         console.log(url)
                         submitTransaction(url);
+                        setDatePicked(false);
                     })
                     .catch(err => console.log(err));
             }).catch(err => console.log(err));
         }else{
+            setDatePicked(false);
             submitTransaction();
         }
     }
@@ -88,8 +101,11 @@ const TransactionModal =  (props) => {
         if(event.type === 'set') {
             setShow(false);
             setDate(selectedDate);
-            setMonth(dateFormat(selectedDate, 'mmmm'));
+            setDay(dateFormat(selectedDate, 'd'));
+            setMonthName(dateFormat(selectedDate, 'mmmm'));
+            setMonthNumber(dateFormat(selectedDate, 'm'));
             setYear(selectedDate.getFullYear());
+            setDatePicked(true);
         }else{
             setShow(false);
         }
@@ -151,7 +167,7 @@ const TransactionModal =  (props) => {
                     color: "white"
                 }}
                 containerStyle={{margin:5}}
-                title={month ? month.toString()+' '+date.getDate()+', '+year.toString() : 'Select a date'}
+                title={datePicked ? monthName.toString()+' '+date.getDate()+', '+year.toString() : 'Select a date'}
                 onPress={openCalendar}
             />
             <Button buttonStyle={{backgroundColor:"#404996",padding:10, borderWidth:1.5, borderColor:"#4682B4"}}
@@ -216,7 +232,8 @@ const mapStateToProps = (state) => {
       categories: state.categories.categories,
       categoriesError: state.categories.error,
 
-      submitTransactionErrors: state.transaction.errors
+      submitTransactionErrors: state.transaction.errors,
+      submitTransactionSuccess: state.transaction.success
     };
   };
   
@@ -225,8 +242,8 @@ const mapStateToProps = (state) => {
         getTransactionTypes: () => dispatch(actions.getTransactionTypes()),
         getCategories: (type) => dispatch(actions.getCategories(type)),
         submitTransaction: 
-        (name, category, amount, type, date, token, image) => 
-            dispatch(actions.submitTransaction(name, category, amount, type, date, token, image)),
+        (name, category, amount, type, date, token, image, day, monthName, monthNumber, year) => 
+            dispatch(actions.submitTransaction(name, category, amount, type, date, token, image, day, monthName, monthNumber, year)),
     };
 };
 

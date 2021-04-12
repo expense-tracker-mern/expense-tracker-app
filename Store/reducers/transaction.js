@@ -2,6 +2,7 @@ import {ADD_TRANSACTION_FAIL, ADD_TRANSACTION_SUCCESS} from '../actions/actionTy
 
 const initialState = {
     errors: null,
+    success: false
 };
   
 const reducer = (state = initialState, action) => {
@@ -12,12 +13,14 @@ const reducer = (state = initialState, action) => {
         return {
           ...state,
           errors: null,
+          success: true
         };
       case ADD_TRANSACTION_FAIL:
         return {
           ...state,
           errors: payload,
-          types: null
+          types: null,
+          success: false
         };
       default:
         return { ...state };
